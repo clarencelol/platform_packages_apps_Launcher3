@@ -146,7 +146,15 @@ public class SettingsActivity extends FragmentActivity
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) { }
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) { 
+        switch (key) {
+            case Utilities.KEY_DOCK_SEARCH:
+                LauncherAppState.getInstanceNoCreate().setNeedsRestart();
+                break;
+            default:
+                break;
+        }
+    }
 
     private boolean startPreference(String fragment, Bundle args, String key) {
         if (Utilities.ATLEAST_P && getSupportFragmentManager().isStateSaved()) {
@@ -201,6 +209,7 @@ public class SettingsActivity extends FragmentActivity
         protected static final String GSA_PACKAGE = "com.google.android.googlequicksearchbox";
 
         private Preference mShowGoogleAppPref;
+        private Preference mShowGoogleBarPref;
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -302,6 +311,10 @@ public class SettingsActivity extends FragmentActivity
                     mShowGoogleAppPref = preference;
                     updateIsGoogleAppEnabled();
                     return true;
+                case Utilities.KEY_DOCK_SEARCH:
+                    mShowGoogleBarPref = preference;
+                    updateIsGoogleAppEnabled();
+                    return true;
             }
 
             return true;
@@ -336,6 +349,10 @@ public class SettingsActivity extends FragmentActivity
         private void updateIsGoogleAppEnabled() {
             if (mShowGoogleAppPref != null) {
                 mShowGoogleAppPref.setEnabled(isGSAEnabled(getContext()));
+            }
+
+            if (mShowGoogleBarPref != null) {
+                mShowGoogleBarPref.setEnabled(Utilities.isGSAEnabled(getContext()));
             }
         }
 
